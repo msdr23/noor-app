@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نُور - المساعد الإسلامي الذكي</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0d5c3f;
+    --primary-light: #1e8e5a;
+    --gold: #c9a227;
+    --gold-light: #f0d060;
+    --gold-dark: #8a6d1a;
+    --bg: #f6f1e7;
+    --card: #fffdf8;
+    --text: #1f2d3d;
+    --text-light: #7a8a99;
+    --user-bubble: #e3f2e8;
+    --ai-bubble: #fdf6e0;
+    --shadow: 0 15px 50px rgba(13, 92, 63, 0.18);
+  }
+  [data-theme="dark"] {
+    --primary: #1e8e5a;
+    --primary-light: #2fbf7a;
+    --gold: #e8c547;
+    --gold-light: #f7e08a;
+    --bg: #0e1420;
+    --card: #16213a;
+    --text: #ecf0f1;
+    --text-light: #a0aec0;
+    --user-bubble: #12362a;
+    --ai-bubble: #3a2f14;
+    --shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Cairo', 'Amiri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    transition: all 0.4s ease;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(201,162,39,0.07) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(13,92,63,0.08) 0%, transparent 45%);
+  }
+  .islamic-pattern {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; opacity: 0.06; z-index: 0;
+  }
+  .container {
+    max-width: 860px; margin: 0 auto; position: relative; z-index: 1;
+    background: var(--card); border-radius: 24px; box-shadow: var(--shadow);
+    overflow: hidden; border: 3px solid var(--gold);
+  }
+  .ornate-border {
+    height: 14px;
+    background:
+      repeating-linear-gradient(90deg, var(--gold) 0 15px, transparent 15px 20px, var(--primary) 20px 35px, transparent 35px 40px);
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, #0a4230 60%, var(--primary) 100%);
+    color: white; padding: 34px 25px 26px; text-align: center; position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: '﷽'; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    font-family: 'Amiri', serif; font-size: 15px; opacity: 0.85; color: var(--gold-light);
+  }
+  .header-ornament { display: flex; justify-content: center; gap: 14px; margin-bottom: 6px; align-items: center; }
+  .header-ornament svg { width: 42px; height: 42px; }
+  .mosque-icon { font-size: 48px; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .header h1 { font-family: 'Aref Ruqaa', 'Amiri', serif; font-size: 42px; color: var(--gold-light); text-shadow: 2px 3px 6px rgba(0,0,0,0.35); }
+  .header p { font-size: 15px; opacity: 0.95; margin-top: 4px; }
+  .header-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 8px; z-index: 10; }
+  .control-btn {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(240,208,96,0.5); color: white;
+    width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 18px;
+    transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+  }
+  .control-btn:hover { background: var(--gold); transform: scale(1.12) rotate(5deg); }
+  .user-chip {
+    position: absolute; top: 15px; right: 15px; display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(240,208,96,0.5); border-radius: 30px;
+    padding: 6px 14px; font-size: 13px; cursor: pointer; z-index: 10; transition: all 0.3s;
+  }
+  .user-chip:hover { background: var(--gold); }
+  .stats-bar {
+    display: flex; justify-content: space-around; padding: 14px; flex-wrap: wrap; gap: 8px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    color: #3a2c05; font-weight: 800; font-size: 14px;
+  }
+  .stat-item { display: flex; align-items: center; gap: 6px; }
+  .tabs { display: flex; background: var(--bg); border-bottom: 2px solid var(--gold); overflow-x: auto; }
+  .tab-btn {
+    flex: 1; min-width: 110px; padding: 14px 8px; background: transparent; border: none;
+    font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-light);
+    cursor: pointer; border-bottom: 4px solid transparent; transition: all 0.3s; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--primary); background: rgba(201,162,39,0.08); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--gold); background: var(--card); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 10px; padding: 18px 20px 12px; background: var(--card); }
+  .suggestion-btn {
+    background: var(--bg); border: 2px solid var(--gold); color: var(--primary); padding: 9px 16px;
+    border-radius: 25px; cursor: pointer; font-size: 13px; font-family: 'Cairo', sans-serif;
+    font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 5px;
+  }
+  .suggestion-btn:hover { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #3a2c05; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(201,162,39,0.35); }
+  .chat-box { height: 440px; overflow-y: auto; padding: 22px; background: var(--bg); scroll-behavior: smooth; }
+  .chat-box::-webkit-scrollbar { width: 8px; }
+  .chat-box::-webkit-scrollbar-track { background: var(--bg); }
+  .chat-box::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+  .msg { margin: 14px 0; padding: 15px 18px; border-radius: 18px; line-height: 1.9; max-width: 85%; word-wrap: break-word; animation: slideIn 0.4s ease-out; position: relative; font-size: 15px; }
+  @keyframes slideIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+  .user { background: var(--user-bubble); margin-left: auto; margin-right: 15px; border-bottom-right-radius: 4px; border-right: 4px solid var(--primary); }
+  .ai { background: var(--ai-bubble); margin-right: auto; margin-left: 15px; border-bottom-left-radius: 4px; border-right: 4px solid var(--gold); }
+  .msg-header { font-size: 12px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+  .msg-actions { position: absolute; top: 8px; left: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.3s; }
+  .ai:hover .msg-actions { opacity: 1; }
+  .action-btn { background: var(--gold); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+  .action-btn:hover { background: var(--primary); transform: scale(1.15); }
+  .input-area { display: flex; padding: 18px 20px; background: var(--card); border-top: 2px solid var(--gold); gap: 12px; align-items: center; }
+  input, select, textarea {
+    padding: 13px 18px; border: 2px solid var(--gold); border-radius: 14px; font-size: 15px;
+    font-family: 'Cairo', sans-serif; outline: none; background: var(--bg); color: var(--text); transition: all 0.3s; width: 100%;
+  }
+  input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(13,92,63,0.12); }
+  .send-btn {
+    padding: 13px 26px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white;
+    border: none; border-radius: 14px; cursor: pointer; font-size: 15px; font-family: 'Cairo', sans-serif;
+    font-weight: 800; transition: all 0.3s; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+    box-shadow: 0 5px 15px rgba(13,92,63,0.3);
+  }
+  .send-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(13,92,63,0.4); }
+  .send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .typing-indicator { display: flex; gap: 4px; padding: 10px; }
+  .typing-indicator span { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; animation: bounce 1.4s infinite; }
+  .typing-indicator span:nth-child(2){animation-delay:0.2s} .typing-indicator span:nth-child(3){animation-delay:0.4s}
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-10px)} }
+  .calc-section { padding: 24px; background: var(--bg); min-height: 300px; }
+  .calc-card {
+    background: var(--card); border: 2px solid var(--gold); border-radius: 20px; padding: 24px;
+    box-shadow: 0 8px 25px rgba(201,162,39,0.12); position: relative; overflow: hidden;
+  }
+  .calc-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary));
+  }
+  .calc-title { font-family: 'Aref Ruqaa', serif; font-size: 26px; color: var(--primary); text-align: center; margin-bottom: 6px; }
+  .calc-subtitle { text-align: center; color: var(--text-light); font-size: 13px; margin-bottom: 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .calc-btn {
+    width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #3a2c05;
+    border: none; border-radius: 14px; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 16px;
+    font-weight: 900; transition: all 0.3s; box-shadow: 0 5px 18px rgba(201,162,39,0.35);
+  }
+  .calc-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(201,162,39,0.5); }
+  .result-box {
+    margin-top: 20px; padding: 20px; border-radius: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white; text-align: center; display: none; animation: slideIn 0.4s ease-out;
+  }
+  .result-box.show { display: block; }
+  .result-box h3 { font-size: 18px; margin-bottom: 8px; color: var(--gold-light); }
+  .result-box .big-number { font-size: 30px; font-weight: 900; }
+  .result-details { margin-top: 14px; text-align: right; }
+  .result-details table { width: 100%; border-collapse: collapse; }
+  .result-details td, .result-details th { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.25); font-size: 14px; }
+  .result-details th { color: var(--gold-light); }
+  .gold-frame { border: 2px dashed var(--gold); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+  .zakat-types-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .zakat-type-card {
+    background: var(--card); border: 2px solid var(--gold); border-radius: 18px; padding: 20px;
+    text-align: center; transition: all 0.35s; position: relative; overflow: hidden;
+  }
+  .zakat-type-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(201,162,39,0.3); border-color: var(--primary); }
+  .zakat-type-card .icon { font-size: 42px; margin-bottom: 10px; }
+  .zakat-type-card h3 { color: var(--primary); font-size: 18px; margin-bottom: 8px; font-family: 'Aref Ruqaa', serif; }
+  .zakat-type-card p { font-size: 13px; color: var(--text-light); line-height: 1.8; }
+  .zakat-type-card .nisab { margin-top: 10px; font-size: 12px; font-weight: 800; color: var(--gold-dark); background: rgba(201,162,39,0.12); border-radius: 10px; padding: 6px; }
+  .auth-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,20,15,0.75);
+    backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
+  }
+  .auth-overlay.show { display: flex; }
+  .auth-box {
+    background: var(--card); border: 3px solid var(--gold); border-radius: 24px; padding: 34px;
+    max-width: 420px; width: 100%; box-shadow: 0 25px 70px rgba(0,0,0,0.5); animation: slideIn 0.4s ease-out; position: relative;
+  }
+  .auth-box::before { content: '﷽'; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-family: 'Amiri', serif; font-size: 14px; color: var(--gold); }
+  .auth-tabs { display: flex; gap: 8px; margin: 24px 0 20px; }
+  .auth-tab { flex: 1; padding: 11px; border: 2px solid var(--gold); background: transparent; border-radius: 12px; font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--text-light); transition: all 0.3s; }
+  .auth-tab.active { background: var(--gold); color: #3a2c05; }
+  .auth-box h2 { font-family: 'Aref Ruqaa', serif; text-align: center; color: var(--primary); font-size: 28px; }
+  .auth-box .form-group { margin-bottom: 14px; }
+  .auth-close { position: absolute; top: 12px; right: 12px; background: #e74c3c; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 15px; }
+  .auth-msg { text-align: center; font-size: 13px; margin-top: 12px; min-height: 20px; font-weight: 700; }
+  .ad-slot {
+    margin: 14px 20px; padding: 12px; border: 2px dashed var(--gold); border-radius: 14px;
+    background: rgba(201,162,39,0.05); text-align: center;
+  }
+  .ad-slot .ad-label { font-size: 11px; color: var(--text-light); letter-spacing: 1px; margin-bottom: 6px; }
+  .ad-placeholder { min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 13px; border-radius: 10px; background: rgba(0,0,0,0.03); }
+  .history-panel { position: fixed; top: 0; right: -420px; width: 400px; max-width: 92vw; height: 100vh; background: var(--card); box-shadow: -5px 0 25px rgba(0,0,0,0.25); transition: right 0.4s ease; z-index: 1500; overflow-y: auto; padding: 20px; }
+  .history-panel.active { right: 0; }
+  .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--gold); }
+  .history-header h3 { color: var(--primary); font-size: 20px; font-family: 'Aref Ruqaa', serif; }
+  .close-history { background: var(--gold); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; }
+  .history-item { background: var(--bg); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-right: 4px solid var(--gold); cursor: pointer; transition: all 0.3s; }
+  .history-item:hover { transform: translateX(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.12); }
+  .history-item .time { font-size: 11px; color: var(--text-light); margin-bottom: 5px; }
+  .history-item .question { font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+  .history-item .answer { font-size: 13px; max-height: 60px; overflow: hidden; color: var(--text-light); }
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1400; }
+  .overlay.active { display: block; }
+  .clear-history { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 10px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 800; margin-top: 20px; }
+  .footer { text-align: center; padding: 18px; background: linear-gradient(135deg, var(--primary), #0a4230); color: white; font-size: 13px; }
+  .footer .ornament { color: var(--gold-light); font-size: 20px; letter-spacing: 12px; margin-bottom: 6px; }
+  @media (max-width: 640px) {
+    body { padding: 8px; }
+    .header h1 { font-size: 30px; }
+    .chat-box { height: 380px; padding: 14px; }
+    .msg { max-width: 95%; font-size: 14px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .zakat-types-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<svg class="islamic-pattern" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="geo" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M40 0 L50 30 L80 40 L50 50 L40 80 L30 50 L0 40 L30 30 Z" fill="none" stroke="#c9a227" stroke-width="1"/>
+      <circle cx="40" cy="40" r="12" fill="none" stroke="#0d5c3f" stroke-width="1"/>
+      <circle cx="0" cy="0" r="8" fill="none" stroke="#c9a227" stroke-width="0.6"/>
+      <circle cx="80" cy="80" r="8" fill="none" stroke="#c9a227" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#geo)"/>
+</svg>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <h2>🕌 نُور</h2>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">تسجيل الدخول</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuth('register')">حساب جديد</button>
+    </div>
+    <div id="authLoginForm">
+      <div class="form-group"><label>📧 البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@mail.com"></div>
+      <div class="form-group"><label>🔒 كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <button class="calc-btn" onclick="doLogin()">دخول 🕌</button>
+    </div>
+    <div id="authRegisterForm" style="display:none">
+      <div class="form-group"><label>👤 الاسم الكامل</label><input type="text" id="regName" placeholder="محمد أحمد"></div>
+      <div class="form-group"><label>📧 البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="example@mail.com"></div>
+      <div class="form-group"><label>🔒 كلمة المرور</label><input type="password" id="regPass" placeholder="6 أحرف على الأقل"></div>
+      <button class="calc-btn" onclick="doRegister()">إنشاء الحساب ✨</button>
+    </div>
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleHistory()"></div>
+
+<div class="history-panel" id="historyPanel">
+  <div class="history-header">
+    <h3>📜 سجل المحادثات</h3>
+    <button class="close-history" onclick="toggleHistory()">✕</button>
+  </div>
+  <div id="historyList"></div>
+  <button class="clear-history" onclick="clearHistory()">🗑️ مسح السجل</button>
+</div>
+
+<div class="container">
+  <div class="ornate-border"></div>
+  <div class="header">
+    <div class="header-controls">
+      <button class="control-btn" onclick="toggleHistory()" title="السجل">📜</button>
+      <button class="control-btn" onclick="toggleTheme()" title="الوضع الليلي">🌙</button>
+    </div>
+    <div class="user-chip" id="userChip" onclick="openAuth()" title="تسجيل الدخول">👤 <span id="userChipName">دخول / تسجيل</span></div>
+    <div class="header-ornament">
+      <svg viewBox="0 0 100 100"><path d="M50 5 L60 35 L95 35 L67 55 L77 90 L50 68 L23 90 L33 55 L5 35 L40 35 Z" fill="none" stroke="#f0d060" stroke-width="2"/></svg>
+      <div class="mosque-icon">🕌</div>
+      <svg viewBox="0 0 100 100"><path d="M50 5 L60 35 L95 35 L67 55 L77 90 L50 68 L23 90 L33 55 L5 35 L40 35 Z" fill="none" stroke="#f0d060" stroke-width="2"/></svg>
+    </div>
+    <h1>نُــــور</h1>
+    <p>المساعد الإسلامي الذكي الموثّق بالقرآن والسنة</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><span>📊</span> <span id="questionCount">0</span> سؤال مُجاب</div>
+    <div class="stat-item"><span>🧮</span> حاسبة الزكاة والمواريث</div>
+    <div class="stat-item"><span>📚</span> مصادر موثوقة</div>
+    <div class="stat-item"><span>⚡</span> رد فوري</div>
+  </div>
+
+  <div class="ad-slot">
+    <div class="ad-label">📢 مساحة إعلانية</div>
+    <div class="ad-placeholder" id="adBannerTop">
+      <span>أضف كود إعلانك هنا — 728×90</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('chat', this)">💬 المحادثة</button>
+    <button class="tab-btn" onclick="showTab('zakat', this)">🧮 حاسبة الزكاة</button>
+    <button class="tab-btn" onclick="showTab('inherit', this)">⚖️ حاسبة المواريث</button>
+    <button class="tab-btn" onclick="showTab('zakatTypes', this)">📚 أنواع الزكاة</button>
+    <button class="tab-btn" onclick="showTab('tafsir', this)">📖 التفسير الميسر</button>
+  </div>
+
+  <div class="tab-content active" id="tab-chat">
+    <div class="suggestions">
+      <button class="suggestion-btn" onclick="askQuestion('ما حكم صلاة الفجر؟')">📖 حكم صلاة الفجر</button>
+      <button class="suggestion-btn" onclick="askQuestion('اكتب منشوراً عن فضل الصلاة على النبي')">✍️ منشور إسلامي</button>
+      <button class="suggestion-btn" onclick="askQuestion('ما هي أركان الإسلام؟')">📚 أركان الإسلام</button>
+      <button class="suggestion-btn" onclick="askQuestion('اشرح لي قوله تعالى: إن الله مع الصابرين')">💡 تفسير آية</button>
+      <button class="suggestion-btn" onclick="askQuestion('اكتب خطبة عن بر الوالدين')">🎤 خطبة جمعة</button>
+    </div>
+    <div class="chat-box" id="output">
+      <div class="msg ai">
+        <div class="msg-header">🕌 نُور</div>
+        أهلاً وسهلاً بك في منصة <b>نُور</b> 🌟<br><br>
+        أنا مساعدك الإسلامي الموثّق بالقرآن والسنة الصحيحة وفتاوى العلماء المعتبرين.<br><br>
+        <b>كيف أساعدك اليوم؟</b><br>
+        • اسألني أي سؤال شرعي<br>
+        • استخدم حاسبة الزكاة والمواريث من التبويبات بالأعلى 🧮<br>
+        • اطلب توليد محتوى موثق (منشور، خطبة، سكريبت)<br><br>
+        <i>✨ كل إجابة موثقة بمصدرها</i>
+      </div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()"><span>إرسال</span><span>➤</span></button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-zakat">
+    <div class="calc-section">
+      <div class="calc-card">
+        <div class="calc-title">🧮 حاسبة الزكاة</div>
+        <div class="calc-subtitle">أدخل قيمة أموالك وحُسبت لك الزكاة الواجبة (2.5%)</div>
+        <div class="gold-frame">
+          <div class="form-grid">
+            <div class="form-group"><label>💰 النقدية (حسابات، أموال سائلة)</label><input type="number" id="zcash" value="0" min="0"></div>
+            <div class="form-group"><label>🪙 قيمة الذهب (بالجرام أو القيمة)</label><input type="number" id="zgold" value="0" min="0"></div>
+            <div class="form-group"><label>🥈 قيمة الفضة</label><input type="number" id="zsilver" value="0" min="0"></div>
+            <div class="form-group"><label>📈 الأسهم والاستثمارات</label><input type="number" id="zstocks" value="0" min="0"></div>
+            <div class="form-group"><label>🏢 بضاعة تجارية</label><input type="number" id="zgoods" value="0" min="0"></div>
+            <div class="form-group"><label>💳 ديون مستحقة لك (متوقف تحصيلها)</label><input type="number" id="zdebts" value="0" min="0"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>📉 ديون عليك (تُخصم)</label><input type="number" id="zmydebts" value="0" min="0"></div>
+            <div class="form-group"><label>🎯 النصاب المحدد (قيمة 85 جرام ذهب)</label><input type="number" id="znisab" value="0" min="0" placeholder="اتركه صفراً للحساب التلقائي"></div>
+          </div>
+        </div>
+        <button class="calc-btn" onclick="calcZakat()">احسب الزكاة الآن 🕌</button>
+        <div class="result-box" id="zakatResult">
+          <h3>🌙 نتيجة حساب الزكاة</h3>
+          <div id="zakatSummary"></div>
+          <div class="result-details" id="zakatDetails"></div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-light);text-align:center">
+          📌 النصاب التقريبي: 85 جرام ذهب أو 595 جرام فضة، وحولان الحول (مرور سنة هجرية كاملة على ملك النصاب)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-inherit">
+    <div class="calc-section">
+      <div class="calc-card">
+        <div class="calc-title">⚖️ حاسبة المواريث</div>
+        <div class="calc-subtitle">توزيع التركة حسب أحكام الفرائض — تشمل الجد والجدة والإخوة والأخوات</div>
+        <div class="gold-frame">
+          <div class="form-grid">
+            <div class="form-group"><label>💰 قيمة التركة الكلية</label><input type="number" id="iestate" value="0" min="0"></div>
+            <div class="form-group"><label>⚰️ مصاريف تجهيز ودفن</label><input type="number" id="ifuneral" value="0" min="0"></div>
+            <div class="form-group"><label>📉 الديون المستحقة</label><input type="number" id="idebts" value="0" min="0"></div>
+            <div class="form-group"><label>📜 الوصية (الثلث الأقصى)</label><input type="number" id="iwasiyya" value="0" min="0"></div>
+          </div>
+
+          <div style="font-weight:800;color:var(--primary);margin:14px 0 8px;font-size:14px;">👤 المتوفى والزوج/الزوجة</div>
+          <div class="form-grid">
+            <div class="form-group"><label>👨 جنس المتوفى</label>
+              <select id="igender"><option value="male">ذكر</option><option value="female">أنثى</option></select>
+            </div>
+            <div class="form-group"><label>💍 الزوج / الزوجة على قيد الحياة؟</label>
+              <select id="ispouse"><option value="yes">نعم</option><option value="no">لا</option></select>
+            </div>
+            <div class="form-group"><label>👰 عدد الزوجات (إن كان المتوفى ذكراً)</label><input type="number" id="iwivescount" value="1" min="1" max="4"></div>
+          </div>
+
+          <div style="font-weight:800;color:var(--primary);margin:14px 0 8px;font-size:14px;">🌳 الأصول (الوالدان والأجداد)</div>
+          <div class="form-grid">
+            <div class="form-group"><label>👴 الأب على قيد الحياة؟</label>
+              <select id="ifather"><option value="no">لا</option><option value="yes">نعم</option></select>
+            </div>
+            <div class="form-group"><label>👵 الأم على قيد الحياة؟</label>
+              <select id="imother"><option value="no">لا</option><option value="yes">نعم</option></select>
+            </div>
+            <div class="form-group"><label>👴 الجد لأب (إن توفي الأب)</label>
+              <select id="igrandfather"><option value="no">لا</option><option value="yes">نعم</option></select>
+            </div>
+            <div class="form-group"><label>👵 الجدة (إن توفيت الأم)</label>
+              <select id="igrandmother"><option value="no">لا</option><option value="yes">نعم</option></select>
+            </div>
+          </div>
+
+          <div style="font-weight:800;color:var(--primary);margin:14px 0 8px;font-size:14px;">🌿 الفروع (الأبناء)</div>
+          <div class="form-grid">
+            <div class="form-group"><label>👦 عدد الأبناء (ذكور)</label><input type="number" id="isons" value="0" min="0"></div>
+            <div class="form-group"><label>👧 عدد البنات</label><input type="number" id="idaughters" value="0" min="0"></div>
+          </div>
+
+          <div style="font-weight:800;color:var(--primary);margin:14px 0 8px;font-size:14px;">👬 الإخوة والأخوات</div>
+          <div class="form-grid">
+            <div class="form-group"><label>🧔 إخوة أشقاء (ذكور)</label><input type="number" id="ifullbro" value="0" min="0"></div>
+            <div class="form-group"><label>👩 أخوات شقيقات (إناث)</label><input type="number" id="ifullsis" value="0" min="0"></div>
+            <div class="form-group"><label>🧔 إخوة لأب (ذكور)</label><input type="number" id="ipatbro" value="0" min="0"></div>
+            <div class="form-group"><label>👩 أخوات لأب (إناث)</label><input type="number" id="ipatsis" value="0" min="0"></div>
+            <div class="form-group"><label>👥 إخوة/أخوات لأم (العدد الكلي)</label><input type="number" id="imatsib" value="0" min="0"></div>
+          </div>
+        </div>
+        <button class="calc-btn" onclick="calcInherit()">⚖️ وزّع التركة</button>
+        <div class="result-box" id="inheritResult">
+          <h3>⚖️ نتيجة التوزيع</h3>
+          <div id="inheritSummary"></div>
+          <div class="result-details" id="inheritDetails"></div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-light);text-align:center">
+          ⚠️ تغطي هذه الحاسبة: الزوج/الزوجات، الأب، الأم، الجد لأب (كبديل للأب عند غيابه)، الجدة، الأبناء والبنات، والإخوة/الأخوات الأشقاء ولأب ولأم — مع تطبيق قواعد الحجب والعَوْل والرَّدّ الأساسية.<br>
+          <b>لا تغطي:</b> حالة "الجد مع الإخوة" الخلافية بين المذاهب (نتعامل مع الجد هنا كبديل كامل للأب، وهو رأي مبسّط وليس محل اتفاق)، أبناء الابن وبنات الابن عند وفاة الابن، الأعمام وأبناء العم والعصبات البعيدة، ذوي الأرحام، حالات المفقود والخنثى المشكل، ومسألتَي "الأكدرية" الدقيقتين. للتركات الحقيقية، راجع دائماً عالماً شرعياً أو محكمة مختصة.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-zakatTypes">
+    <div class="calc-section">
+      <div class="zakat-types-grid">
+        <div class="zakat-type-card">
+          <div class="icon">💰</div><h3>زكاة المال</h3>
+          <p>تجب في الذهب والفضة والنقود وما في حكمها إذا بلغت النصاب وحال عليها الحول.</p>
+          <div class="nisab">النصاب: 85 جرام ذهب • المقدار: 2.5%</div>
+        </div>
+        <div class="zakat-type-card">
+          <div class="icon">🌾</div><h3>زكاة الزروع والثمار</h3>
+          <p>تجب في كل ما يُكال ويُدخر من الحبوب والثمار مثل القمح والشعير والتمر والزبيب.</p>
+          <div class="nisab">5 وسق • تُخرج عند الحصاد</div>
+        </div>
+        <div class="zakat-type-card">
+          <div class="icon">🐪</div><h3>زكاة الأنعام</h3>
+          <p>تجب في الإبل والبقر والغنم إذا سامت (بلغت النصاب) ورعت أربعة أشهر.</p>
+          <div class="nisab">5 من الإبل • 30 بقرة • 40 غنم</div>
+        </div>
+        <div class="zakat-type-card">
+          <div class="icon">🎁</div><h3>زكاة الفطر</h3>
+          <p>صاع من طعام عن كل مسلم، تجب قبل صلاة العيد، تطهيراً للصائم وتُطعم للفقراء.</p>
+          <div class="nisab">تُعطى قبل صلاة العيد • صاع ≈ 2.5 كجم</div>
+        </div>
+        <div class="zakat-type-card">
+          <div class="icon">📈</div><h3>زكاة الأسهم والاستثمار</h3>
+          <p>إن كانت للمتاجرة فزكاتها كزكاة المال، وإن كانت استثمارية فتُزكى أرباحها فقط.</p>
+          <div class="nisab">2.5% من القيمة أو الأرباح</div>
+        </div>
+        <div class="zakat-type-card">
+          <div class="icon">🏢</div><h3>زكاة عروض التجارة</h3>
+          <p>تجب في البضائع المعدة للبيع بقيمتها السائرة وقت وجوب الزكاة.</p>
+          <div class="nisab">2.5% عند تمام الحول</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ تبويب التفسير الميسر ═══════ -->
+  <div class="tab-content" id="tab-tafsir">
+    <div class="calc-section">
+      <div class="calc-card">
+        <div class="calc-title">📖 التفسير الميسر</div>
+        <div class="calc-subtitle">تفسير مجمع الملك فهد لطباعة المصحف الشريف — آية بآية</div>
+        <div class="gold-frame">
+          <div class="form-grid" style="grid-template-columns: 2fr 1fr auto;">
+            <div class="form-group">
+              <label>📜 اختر السورة</label>
+              <select id="tafsirSurah"></select>
+            </div>
+            <div class="form-group">
+              <label>🔢 رقم آية (اختياري)</label>
+              <input type="number" id="tafsirAyah" min="1" placeholder="كل الآيات">
+            </div>
+            <div class="form-group" style="justify-content:flex-end">
+              <label>&nbsp;</label>
+              <button class="calc-btn" style="padding:13px 20px;white-space:nowrap" onclick="loadTafsir()">اعرض التفسير 📖</button>
+            </div>
+          </div>
+        </div>
+        <div id="tafsirLoading" style="display:none;text-align:center;padding:20px;color:var(--text-light)">
+          <div class="typing-indicator" style="justify-content:center"><span></span><span></span><span></span></div>
+          جارٍ التحميل من مصدر التفسير...
+        </div>
+        <div id="tafsirError" style="display:none;background:#ffebee;border-right:4px solid #f44336;padding:14px;border-radius:10px;color:#c0392b;font-size:14px;"></div>
+        <div id="tafsirOutput"></div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-light);text-align:center">
+          📌 المصدر: التفسير الميسر — مجمع الملك فهد لطباعة المصحف الشريف، عبر واجهة alquran.cloud المفتوحة
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">
+    <div class="ad-label">📢 مساحة إعلانية</div>
+    <div class="ad-placeholder" id="adBannerBottom">
+      <span>أضف كود إعلانك هنا — 300×250</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="ornament">✦ ✦ ✦</div>
+    <div>نُور © 2026 - خدمة المحتوى الإسلامي بالذكاء الاصطناعي</div>
+  </div>
+  <div class="ornate-border"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ملاحظة أمان مهمة:
+   لا يوجد أي مفتاح API في هذا الملف. كل طلب يُرسل من هنا يذهب
+   إلى Netlify Function (/api/ask) والتي تتصل بـ Gemini من طرف
+   السيرفر، حيث يكون المفتاح مخزناً بأمان كمتغير بيئة.
+   ═══════════════════════════════════════════════════════════ */
+const ASK_ENDPOINT = "/api/ask";
+
+let questionCount = 0;
+let chatHistory = JSON.parse(localStorage.getItem('noorHistory') || '[]');
+const DEFAULT_NISAB = 20000; /* قيمة تقريبية لـ 85 جرام ذهب — عدّلها حسب سعر الذهب */
+
+/* ═══════════════════════════════════════════════════════════ */
+function showTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ملاحظة: نظام الدخول/التسجيل هذا يخزن البيانات في localStorage
+   فقط لأغراض العرض التجريبي (demo). لأي استخدام حقيقي/إنتاجي
+   يجب استبداله بمصادقة حقيقية على السيرفر (مثل Netlify Identity
+   أو Auth0 أو Firebase Auth) وعدم تخزين كلمات المرور محلياً.
+   ═══════════════════════════════════════════════════════════ */
+function openAuth() {
+  if (getCurrentUser()) { if (confirm('هل تريد تسجيل الخروج؟')) logout(); return; }
+  document.getElementById('authOverlay').classList.add('show');
+}
+function closeAuth() { document.getElementById('authOverlay').classList.remove('show'); document.getElementById('authMsg').textContent = ''; }
+function switchAuth(mode) {
+  document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+  document.getElementById('authLoginForm').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('authRegisterForm').style.display = mode === 'register' ? 'block' : 'none';
+  document.getElementById('authMsg').textContent = '';
+}
+function getUsers() { return JSON.parse(localStorage.getItem('noorUsers') || '[]'); }
+function saveUsers(u) { localStorage.setItem('noorUsers', JSON.stringify(u)); }
+function getCurrentUser() { return JSON.parse(localStorage.getItem('noorCurrentUser') || 'null'); }
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const msg = document.getElementById('authMsg');
+  if (!name || !email || !pass) { msg.style.color = '#e74c3c'; msg.textContent = '⚠️ يرجى ملء جميع الحقول'; return; }
+  if (pass.length < 6) { msg.style.color = '#e74c3c'; msg.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; return; }
+  const users = getUsers();
+  if (users.find(u => u.email === email)) { msg.style.color = '#e74c3c'; msg.textContent = '⚠️ هذا البريد مسجل مسبقاً'; return; }
+  users.push({ name, email, pass: btoa(pass), joined: new Date().toISOString() });
+  saveUsers(users);
+  msg.style.color = '#1e8e5a'; msg.textContent = '✅ تم إنشاء الحساب بنجاح! يمكنك الدخول الآن';
+  setTimeout(() => switchAuth('login'), 1200);
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const msg = document.getElementById('authMsg');
+  const user = getUsers().find(u => u.email === email && u.pass === btoa(pass));
+  if (!user) { msg.style.color = '#e74c3c'; msg.textContent = '❌ بيانات الدخول غير صحيحة'; return; }
+  localStorage.setItem('noorCurrentUser', JSON.stringify({ name: user.name, email: user.email }));
+  msg.style.color = '#1e8e5a'; msg.textContent = '✅ أهلاً بك يا ' + user.name;
+  updateUserChip();
+  setTimeout(closeAuth, 1000);
+}
+
+function logout() {
+  localStorage.removeItem('noorCurrentUser');
+  updateUserChip();
+}
+function updateUserChip() {
+  const u = getCurrentUser();
+  document.getElementById('userChipName').textContent = u ? '👤 ' + u.name + ' (خروج)' : 'دخول / تسجيل';
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+function calcZakat() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+  const cash = v('zcash'), gold = v('zgold'), silver = v('zsilver'),
+        stocks = v('zstocks'), goods = v('zgoods'), debts = v('zdebts'),
+        myDebts = v('zmydebts');
+  let nisab = v('znisab');
+  if (nisab <= 0) nisab = DEFAULT_NISAB;
+  const gross = cash + gold + silver + stocks + goods + debts;
+  const net = Math.max(0, gross - myDebts);
+  const box = document.getElementById('zakatResult');
+  const summary = document.getElementById('zakatSummary');
+  const details = document.getElementById('zakatDetails');
+  if (net <= 0) {
+    summary.innerHTML = '<div class="big-number">0</div><p>لا توجد أموال زكوية</p>';
+    details.innerHTML = ''; box.classList.add('show'); return;
+  }
+  if (net >= nisab) {
+    const zakat = net * 0.025;
+    summary.innerHTML = '<div class="big-number">' + zakat.toLocaleString('ar-EG', {maximumFractionDigits: 2}) + '</div><p>💰 الزكاة الواجبة (2.5%)</p>';
+    details.innerHTML = `<table>
+      <tr><th>البند</th><th>القيمة</th></tr>
+      <tr><td>إجمالي الأموال الزكوية</td><td>${gross.toLocaleString('ar-EG')}</td></tr>
+      <tr><td>الديون المخصومة</td><td>(${myDebts.toLocaleString('ar-EG')})</td></tr>
+      <tr><td>الصافي الواجب فيه الزكاة</td><td>${net.toLocaleString('ar-EG')}</td></tr>
+      <tr><td>النصاب</td><td>${nisab.toLocaleString('ar-EG')}</td></tr>
+      <tr><td style="color:var(--gold-light)"><b>الزكاة الواجبة</b></td><td><b>${zakat.toLocaleString('ar-EG', {maximumFractionDigits: 2})}</b></td></tr>
+    </table>`;
+  } else {
+    summary.innerHTML = '<div class="big-number" style="font-size:22px">لم يبلغ النصاب</div><p>صافي مالك (' + net.toLocaleString('ar-EG') + ') أقل من النصاب (' + nisab.toLocaleString('ar-EG') + ')</p>';
+    details.innerHTML = '<p style="text-align:center">🌙 لا زكاة واجبة عليك حالياً، ويبقى الأجر في النية</p>';
+  }
+  box.classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   حاسبة المواريث — نسخة موسّعة (فرائض)
+   تغطي: الزوج/الزوجات، الأب، الأم، الجد لأب، الجدة، الأبناء
+   والبنات، الإخوة/الأخوات (أشقاء / لأب / لأم)، مع تطبيق قواعد
+   الحجب (hujb) والعَوْل (awl) والرَّدّ (radd) الأساسية.
+
+   تنبيه منهجي: الجد هنا يُعامل كبديل كامل للأب عند غياب الأب
+   (رأي مبسّط يقرّبه لرأي الحنفية)، وهذا لا يغطي مسألة "الجد مع
+   الإخوة" الخلافية بين المذاهب (مقاسمة الجد للإخوة الأشقاء/لأب)،
+   وهي من أدق أبواب الفرائض ويجب فيها الرجوع لعالم مختص.
+   لا تغطي أيضاً: أبناء/بنات الابن، الأعمام والعصبات البعيدة،
+   ذوي الأرحام، المفقود، الخنثى المشكل، ومسائل الأكدرية.
+   ═══════════════════════════════════════════════════════════ */
+function calcInherit() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+  const estate = v('iestate'), funeral = v('ifuneral'), debts = v('idebts');
+  let wasiyya = v('iwasiyya');
+  const gender = document.getElementById('igender').value;
+  const spouse = document.getElementById('ispouse').value === 'yes';
+  const wivesCount = Math.max(1, v('iwivescount') || 1);
+  const sons = v('isons'), daughters = v('idaughters');
+  const father = document.getElementById('ifather').value === 'yes';
+  const mother = document.getElementById('imother').value === 'yes';
+  const grandfather = document.getElementById('igrandfather').value === 'yes';
+  const grandmother = document.getElementById('igrandmother').value === 'yes';
+  const fullBro = v('ifullbro'), fullSis = v('ifullsis');
+  const patBro = v('ipatbro'), patSis = v('ipatsis');
+  const matSib = v('imatsib');
+
+  const box = document.getElementById('inheritResult');
+  const summary = document.getElementById('inheritSummary');
+  const details = document.getElementById('inheritDetails');
+
+  let net = estate - funeral - debts;
+  if (net <= 0) {
+    summary.innerHTML = '<div class="big-number" style="font-size:20px">لا تركة للتوزيع</div><p>التركة لا تكفي المصاريف والديون</p>';
+    details.innerHTML = ''; box.classList.add('show'); return;
+  }
+  const maxWasiyya = net / 3;
+  if (wasiyya > maxWasiyya) wasiyya = maxWasiyya;
+  net -= wasiyya;
+
+  const hasSon = sons > 0;
+  const hasChild = hasSon || daughters > 0;
+  // الجد يُحجب بالأب، ويقوم مقامه تماماً عند غيابه (تبسيط منهجي)
+  const grandfatherActive = grandfather && !father;
+  const maleAscendantBlocking = father || grandfatherActive;
+
+  // ── قواعد الحجب (الإسقاط الكامل) ──
+  // الإخوة/الأخوات لأم يُحجبون بالأصل الوارث المذكر أو بأي فرع وارث (ابن أو بنت)
+  const matSibEff = (maleAscendantBlocking || hasChild) ? 0 : matSib;
+  // الأشقاء يُحجبون بالأب/الجد أو بالابن
+  const fullBroEff = (maleAscendantBlocking || hasSon) ? 0 : fullBro;
+  const fullSisEff = (maleAscendantBlocking || hasSon) ? 0 : fullSis;
+  // لأب يُحجبون بكل ما سبق + بوجود إخوة/أخوات أشقاء
+  const patBlocked = maleAscendantBlocking || hasSon || fullBroEff > 0 || fullSisEff > 0;
+  const patBroEff = patBlocked ? 0 : patBro;
+  const patSisEff = patBlocked ? 0 : patSis;
+
+  const hasDaughtersNoSon = !hasSon && daughters > 0;
+
+  const fixed = {};      // اسم البند → الكسر من التركة
+  const asaba = [];      // مجموعات التعصيب التي تأخذ الباقي
+
+  // ── الزوج / الزوجة ──
+  let spouseShare = 0;
+  if (spouse) {
+    if (gender === 'male') spouseShare = hasChild ? 1/8 : 1/4;   // زوجة/زوجات (تُقسّم بينهنّ)
+    else spouseShare = hasChild ? 1/4 : 1/2;                      // زوج
+    fixed[gender === 'male' ? 'wife' : 'husband'] = spouseShare;
+  }
+
+  // ── عدد الإخوة/الأخوات (يُحتسب للتأثير على فرض الأم حتى لو حُجبوا) ──
+  const siblingCountForMother = fullBro + fullSis + patBro + patSis + matSib;
+
+  // ── الأم (مع حالة العُمَريّتين الخاصة) ──
+  if (mother) {
+    const umariyyatayn = spouse && father && !hasChild && siblingCountForMother === 0;
+    if (umariyyatayn) {
+      // الأم تأخذ ثلث الباقي بعد فرض الزوج/الزوجة، لا ثلث التركة كاملة
+      fixed['mother'] = (1 - spouseShare) / 3;
+    } else if (hasChild || siblingCountForMother >= 2) {
+      fixed['mother'] = 1/6;
+    } else {
+      fixed['mother'] = 1/3;
+    }
+  }
+
+  // ── الجدة (فقط عند غياب الأم) ──
+  if (grandmother && !mother) {
+    fixed['grandmother'] = 1/6;
+  }
+
+  // ── الأب أو الجد (بديله) ──
+  const ascendantKey = father ? 'father' : (grandfatherActive ? 'grandfather' : null);
+  if (ascendantKey) {
+    if (hasChild) {
+      fixed[ascendantKey + '_fixed'] = 1/6;
+      if (!hasSon) asaba.push({ type: 'ascendantResidue', key: ascendantKey });
+    } else {
+      asaba.push({ type: 'ascendantAll', key: ascendantKey });
+    }
+  }
+
+  // ── الأبناء والبنات ──
+  if (hasSon) {
+    asaba.push({ type: 'children', sons, daughters });
+  } else if (daughters > 0) {
+    fixed['daughters'] = daughters === 1 ? 1/2 : 2/3;
+  }
+
+  // ── الإخوة/الأخوات الأشقاء ──
+  if (fullBroEff > 0) {
+    asaba.push({ type: 'siblings', label: 'أشقاء', b: fullBroEff, s: fullSisEff });
+  } else if (fullSisEff > 0) {
+    if (hasDaughtersNoSon) asaba.push({ type: 'siblings', label: 'شقيقات', b: 0, s: fullSisEff });
+    else fixed['fullSisters'] = fullSisEff === 1 ? 1/2 : 2/3;
+  }
+
+  // ── الإخوة/الأخوات لأب (فقط إن لم يوجد أشقاء) ──
+  if (patBroEff > 0) {
+    asaba.push({ type: 'siblings', label: 'لأب', b: patBroEff, s: patSisEff });
+  } else if (patSisEff > 0) {
+    if (hasDaughtersNoSon) asaba.push({ type: 'siblings', label: 'لأب', b: 0, s: patSisEff });
+    else fixed['patSisters'] = patSisEff === 1 ? 1/2 : 2/3;
+  }
+
+  // ── الإخوة/الأخوات لأم (فرض ثابت دائماً، لا يدخلون في التعصيب) ──
+  if (matSibEff === 1) fixed['maternalSibs'] = 1/6;
+  else if (matSibEff >= 2) fixed['maternalSibs'] = 1/3;
+
+  // ── مجموع الفروض ──
+  let fixedTotal = Object.values(fixed).reduce((a, b) => a + b, 0);
+  let awlApplied = false;
+  if (fixedTotal > 1.0000001) {
+    // العَوْل: تُخفَّض كل الفروض بنفس النسبة حتى يتساوى المجموع بالتركة
+    const factor = 1 / fixedTotal;
+    for (const k in fixed) fixed[k] *= factor;
+    fixedTotal = 1;
+    awlApplied = true;
+  }
+
+  let residue = Math.max(0, 1 - fixedTotal);
+
+  // ── توزيع الباقي على العصبات ──
+  const rows = [];
+  let raddEligibleTotal = 0; // مجموع الفروض غير الزوجية لأغراض الرَّدّ
+
+  function labelFor(key) {
+    return { father: 'الأب', grandfather: 'الجد لأب' }[key] || key;
+  }
+
+  if (residue > 0.0000001 && asaba.length > 0) {
+    for (const group of asaba) {
+      if (group.type === 'ascendantResidue' || group.type === 'ascendantAll') {
+        rows.push([labelFor(group.key) + (group.type === 'ascendantResidue' ? ' (الباقي تعصيباً)' : ' (تعصيب كامل)'), residue]);
+      } else if (group.type === 'children') {
+        const parts = group.sons * 2 + group.daughters;
+        const unit = parts > 0 ? residue / parts : 0;
+        if (group.sons > 0) rows.push([`كل ابن (من ${group.sons})`, unit * 2]);
+        if (group.daughters > 0) rows.push([`كل بنت (من ${group.daughters}) — الباقي تعصيباً`, unit]);
+      } else if (group.type === 'siblings') {
+        const parts = group.b * 2 + group.s;
+        const unit = parts > 0 ? residue / parts : 0;
+        if (group.b > 0) rows.push([`كل أخ ${group.label} (من ${group.b})`, unit * 2]);
+        if (group.s > 0) rows.push([`كل أخت ${group.label} (من ${group.s}) — تعصيباً`, unit]);
+      }
+    }
+  } else if (residue > 0.0000001) {
+    // ── الرَّدّ: لا يوجد عصبة، يُرَدّ الباقي على أصحاب الفروض من غير الزوجين ──
+    const raddKeys = Object.keys(fixed).filter(k => k !== 'wife' && k !== 'husband');
+    const raddBase = raddKeys.reduce((a, k) => a + fixed[k], 0);
+    if (raddBase > 0) {
+      for (const k of raddKeys) fixed[k] += residue * (fixed[k] / raddBase);
+      residue = 0;
+    }
+    // لو مفيش أي وارث غير الزوج/الزوجة، يبقى الباقي لبيت المال / ذوي الأرحام (لا يُضاف تلقائياً هنا)
+  }
+
+  // ── تجميع صفوف الفروض للعرض ──
+  const labels = {
+    wife: wivesCount > 1 ? `كل زوجة (من ${wivesCount})` : 'الزوجة',
+    husband: 'الزوج',
+    mother: 'الأم',
+    grandmother: 'الجدة',
+    father_fixed: 'الأب (فرض السدس)',
+    grandfather_fixed: 'الجد لأب (فرض السدس)',
+    daughters: daughters === 1 ? 'البنت' : `كل بنت (من ${daughters})`,
+    fullSisters: fullSisEff === 1 ? 'الأخت الشقيقة' : `كل أخت شقيقة (من ${fullSisEff})`,
+    patSisters: patSisEff === 1 ? 'الأخت لأب' : `كل أخت لأب (من ${patSisEff})`,
+    maternalSibs: matSibEff === 1 ? 'الأخ/الأخت لأم' : `كل أخ/أخت لأم (من ${matSibEff})`
+  };
+
+  for (const key in fixed) {
+    if (fixed[key] <= 0.0000001) continue;
+    let frac = fixed[key];
+    // تقسيم فرض الزوجات على عددهن، وفرض البنات/الأخوات على عددهن
+    if (key === 'wife') frac = frac / wivesCount;
+    else if (key === 'daughters') frac = frac / daughters;
+    else if (key === 'fullSisters') frac = frac / fullSisEff;
+    else if (key === 'patSisters') frac = frac / patSisEff;
+    else if (key === 'maternalSibs') frac = frac / matSibEff;
+    rows.push([labels[key] || key, frac]);
+  }
+
+  const tableRows = rows.map(([name, frac]) =>
+    `<tr><td>${name}</td><td>${(frac*100).toFixed(2)}%</td><td>${(net*frac).toLocaleString('ar-EG', {maximumFractionDigits: 2})}</td></tr>`
+  ).join('');
+
+  const finalRows = tableRows || '<tr><td colspan="3">لا وارث من الفئات المدخلة — راجع عالماً شرعياً لتحديد باقي الورثة (أعمام، ذوي أرحام...)</td></tr>';
+
+  summary.innerHTML = `<div class="big-number">${net.toLocaleString('ar-EG', {maximumFractionDigits: 2})}</div><p>صافي التركة بعد المصاريف والديون والوصية (${wasiyya.toLocaleString('ar-EG')})</p>`;
+  details.innerHTML = `<table>
+    <tr><th>الوارث</th><th>الحصة</th><th>المبلغ</th></tr>
+    ${finalRows}
+  </table>
+  <p style="margin-top:10px;font-size:12px;opacity:0.85">
+    👦 للذكر مثل حظ الأنثيين في التعصيب • الوصية محدودة بالثلث
+    ${awlApplied ? '• ⚠️ تم تطبيق مبدأ <b>العَوْل</b> لأن مجموع الفروض تجاوز التركة، فخُفِّضت الأنصبة بنفس النسبة' : ''}
+  </p>`;
+  box.classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.querySelector('[onclick="toggleTheme()"]');
+  if (html.getAttribute('data-theme') === 'dark') { html.removeAttribute('data-theme'); btn.textContent = '🌙'; }
+  else { html.setAttribute('data-theme', 'dark'); btn.textContent = '☀️'; }
+}
+function toggleHistory() {
+  document.getElementById('historyPanel').classList.toggle('active');
+  document.getElementById('overlay').classList.toggle('active');
+  if (document.getElementById('historyPanel').classList.contains('active')) renderHistory();
+}
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (chatHistory.length === 0) { list.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:40px 0;">لا توجد محادثات سابقة</p>'; return; }
+  list.innerHTML = chatHistory.slice().reverse().map((item, idx) => `
+    <div class="history-item" onclick="loadHistory(${chatHistory.length - 1 - idx})">
+      <div class="time">${item.time}</div>
+      <div class="question">${item.question}</div>
+      <div class="answer">${item.answer.substring(0, 100)}...</div>
+    </div>`).join('');
+}
+function loadHistory(index) {
+  const item = chatHistory[index];
+  if (item) { document.getElementById('userInput').value = item.question; toggleHistory(); showTab('chat', document.querySelectorAll('.tab-btn')[0]); sendMessage(); }
+}
+function clearHistory() {
+  if (confirm('هل أنت متأكد من مسح سجل المحادثات؟')) {
+    chatHistory = []; localStorage.removeItem('noorHistory'); renderHistory();
+    document.getElementById('questionCount').textContent = '0';
+  }
+}
+function saveToHistory(q, a) {
+  const now = new Date();
+  const time = now.toLocaleString('ar-SA', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+  chatHistory.push({ question: q, answer: a, time });
+  if (chatHistory.length > 50) chatHistory.shift();
+  localStorage.setItem('noorHistory', JSON.stringify(chatHistory));
+}
+function askQuestion(q) { document.getElementById('userInput').value = q; sendMessage(); }
+function copyText(t) { navigator.clipboard.writeText(t).then(() => alert('✅ تم نسخ الإجابة')); }
+function shareWhatsApp(t) { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
+
+/* ═══════════════════════════════════════════════════════════
+   المحادثة: كل الاتصال بـ Gemini يمر عبر /api/ask (Netlify Function)
+   لا يوجد أي مفتاح API في هذا الملف.
+   ═══════════════════════════════════════════════════════════ */
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const output = document.getElementById('output');
+  const sendBtn = document.getElementById('sendBtn');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'msg user';
+  const userHeader = document.createElement('div');
+  userHeader.className = 'msg-header';
+  userHeader.textContent = '👤 أنت';
+  const userText = document.createElement('div');
+  userText.style.whiteSpace = 'pre-wrap';
+  userText.textContent = question;
+  userMsg.append(userHeader, userText);
+  output.appendChild(userMsg);
+
+  input.value = '';
+
+  const loadingId = 'loading-' + Date.now();
+  const loading = document.createElement('div');
+  loading.className = 'msg ai';
+  loading.id = loadingId;
+  loading.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+  output.appendChild(loading);
+  output.scrollTop = output.scrollHeight;
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<span>جاري الإرسال...</span><span>⏳</span>';
+
+  try {
+    const response = await fetch(ASK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (_) {
+      data = {};
+    }
+
+    const loadingEl = document.getElementById(loadingId);
+    if (loadingEl) loadingEl.remove();
+
+    if (!response.ok || data.error) {
+      const message = data?.error || `HTTP ${response.status}`;
+      throw new Error(message);
+    }
+
+    const aiReply = (data.reply || '').trim();
+    if (!aiReply) throw new Error('استجابة فارغة من الخادم');
+
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'msg ai';
+
+    const aiHeader = document.createElement('div');
+    aiHeader.className = 'msg-header';
+    aiHeader.textContent = '🕌 نُور';
+
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'action-btn';
+    copyBtn.title = 'نسخ';
+    copyBtn.textContent = '📋';
+    copyBtn.addEventListener('click', () => copyText(aiReply));
+
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'action-btn';
+    shareBtn.title = 'مشاركة واتساب';
+    shareBtn.textContent = '📤';
+    shareBtn.addEventListener('click', () => shareWhatsApp(aiReply));
+
+    actions.append(copyBtn, shareBtn);
+
+    const replyText = document.createElement('div');
+    replyText.style.whiteSpace = 'pre-wrap';
+    replyText.textContent = aiReply;
+
+    aiMsg.append(aiHeader, actions, replyText);
+    output.appendChild(aiMsg);
+
+    questionCount++;
+    document.getElementById('questionCount').textContent = questionCount;
+    saveToHistory(question, aiReply);
+
+  } catch (e) {
+    const loadingEl = document.getElementById(loadingId);
+    const errorMsg = document.createElement('div');
+    errorMsg.className = 'msg ai';
+    errorMsg.style.cssText = 'background:#ffebee;border-right-color:#f44336;white-space:pre-wrap;';
+
+    const errorTitle = document.createElement('b');
+    errorTitle.textContent = '❌ حدث خطأ في الاتصال';
+    const errorText = document.createElement('div');
+    errorText.style.marginTop = '8px';
+    errorText.textContent = e?.message || 'خطأ غير معروف';
+
+    errorMsg.append(errorTitle, errorText);
+    if (loadingEl) loadingEl.replaceWith(errorMsg);
+    else output.appendChild(errorMsg);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<span>إرسال</span><span>➤</span>';
+    output.scrollTop = output.scrollHeight;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   التفسير الميسر — عبر واجهة alquran.cloud المفتوحة والمجانية
+   (لا يحتاج مفتاح API، ومتاحة مباشرة من المتصفح)
+   ═══════════════════════════════════════════════════════════ */
+const SURAH_NAMES = [
+  "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
+  "هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+  "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+  "لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
+  "فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
+  "الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
+  "الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
+  "نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
+  "التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+  "الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
+  "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
+  "المسد","الإخلاص","الفلق","الناس"
+];
+
+function populateTafsirSurahList() {
+  const select = document.getElementById('tafsirSurah');
+  if (!select) return;
+  select.innerHTML = SURAH_NAMES.map((name, i) =>
+    `<option value="${i + 1}">${i + 1}. ${name}</option>`
+  ).join('');
+}
+
+async function loadTafsir() {
+  const surahNum = document.getElementById('tafsirSurah').value;
+  const ayahNum = document.getElementById('tafsirAyah').value.trim();
+  const loading = document.getElementById('tafsirLoading');
+  const errorBox = document.getElementById('tafsirError');
+  const output = document.getElementById('tafsirOutput');
+
+  output.innerHTML = '';
+  errorBox.style.display = 'none';
+  loading.style.display = 'block';
+
+  try {
+    // نجيب النص الأصلي والتفسير الميسر معاً بالتوازي
+    const path = ayahNum ? `${surahNum}:${ayahNum}` : surahNum;
+    const endpointBase = ayahNum ? 'ayah' : 'surah';
+
+    const [arabicRes, tafsirRes] = await Promise.all([
+      fetch(`https://api.alquran.cloud/v1/${endpointBase}/${path}/quran-uthmani`),
+      fetch(`https://api.alquran.cloud/v1/${endpointBase}/${path}/ar.muyassar`)
+    ]);
+
+    if (!arabicRes.ok || !tafsirRes.ok) {
+      throw new Error('تعذّر الوصول لمصدر التفسير حالياً، حاول مرة أخرى');
+    }
+
+    const arabicData = await arabicRes.json();
+    const tafsirData = await tafsirRes.json();
+
+    if (arabicData.code !== 200 || tafsirData.code !== 200) {
+      throw new Error(arabicData.data || tafsirData.data || 'لم يتم العثور على البيانات المطلوبة');
+    }
+
+    // توحيد الشكل: مصفوفة آيات سواء كانت آية واحدة أو سورة كاملة
+    const arabicAyahs = ayahNum ? [arabicData.data] : arabicData.data.ayahs;
+    const tafsirAyahs = ayahNum ? [tafsirData.data] : tafsirData.data.ayahs;
+
+    let html = '';
+    for (let i = 0; i < arabicAyahs.length; i++) {
+      const a = arabicAyahs[i];
+      const t = tafsirAyahs[i];
+      html += `
+        <div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:18px;margin-bottom:14px;">
+          <div style="font-family:'Amiri',serif;font-size:22px;line-height:2.2;color:var(--text);text-align:center;margin-bottom:12px;">
+            ${escapeHtml(a.text)}
+            <span style="color:var(--gold-dark);font-size:16px;">﴿${a.numberInSurah}﴾</span>
+          </div>
+          <div style="border-top:1px dashed var(--gold);padding-top:12px;font-size:14px;line-height:2;color:var(--text-light);">
+            <b style="color:var(--primary)">🔎 التفسير الميسر:</b> ${escapeHtml(t.text)}
+          </div>
+        </div>`;
+    }
+    output.innerHTML = html;
+
+  } catch (e) {
+    errorBox.textContent = '❌ ' + (e?.message || 'حدث خطأ غير متوقع أثناء تحميل التفسير');
+    errorBox.style.display = 'block';
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* تشغيل أولي */
+populateTafsirSurahList();
+updateUserChip();
+if (chatHistory.length > 0) {
+  questionCount = chatHistory.length;
+  document.getElementById('questionCount').textContent = questionCount;
+}
+</script>
+</body>
+</html>

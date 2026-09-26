@@ -1,0 +1,10 @@
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+# اختصار للرابط: بدل ما تنادي /.netlify/functions/ask-gemini
+# تقدر تنادي /api/ask مباشرة
+[[redirects]]
+  from = "/api/ask"
+  to = "/.netlify/functions/ask-gemini"
+  status = 200
