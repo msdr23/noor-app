@@ -7,12 +7,16 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'مفتاح GEMINI_API_KEY غير موجود' });
+    console.error('❌ GEMINI_API_KEY غير موجود');
+    return res.status(500).json({ error: 'مفتاح API غير موجود في إعدادات Vercel' });
   }
 
   try {
+    // استخدام أحدث نموذج متاح ومضمون
+    const modelName = 'gemini-2.0-flash';
+    
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -21,21 +25,31 @@ export default async function handler(req, res) {
             parts: [{
               text: `أنت "نور"، مساعد إسلامي ذكي ودقيق. أجب بناءً على القرآن والسنة الصحيحة وفهم السلف الصالح. اذكر المصادر دائماً. نبّه للرجوع لعالم مختص في المسائل الدقيقة. السؤال: ${question}`
             }]
-          }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048
+          }
         })
       }
     );
 
     const data = await response.json();
     
+    console.log('Response status:', response.status);
+    console.log('Response data:', JSON.stringify(data));
+    
     if (!response.ok) {
-      throw new Error(data.error?.message || 'خطأ في الاتصال بـ Gemini');
+      const errorMsg = data?.error?.message || `HTTP ${response.status}`;
+      console.error('❌ خطأ من Gemini:', errorMsg);
+      return res.status(response.status).json({ error: errorMsg });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'لم أجد إجابة';
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'لم أجد إجابة';
 
     return res.status(200).json({ reply });
   } catch (error) {
+    console.error('❌ خطأ في الدالة:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }
