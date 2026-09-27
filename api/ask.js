@@ -1,3 +1,78 @@
+Skip to content
+msdr23
+noor-app
+Repository navigation
+Code
+Issues
+Pull requests
+Agents
+Actions
+Projects
+Wiki
+Security and quality
+Insights
+Settings
+Files
+
+t
+T
+api
+ask.js
+README.md
+index.html
+netlify.toml
+noor-app/api
+/
+
+in
+main
+
+Edit
+
+Preview
+Indent mode
+
+Indent size
+
+Line wrap mode
+
+Editing ask.js file contents
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -34,19 +109,4 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      const errorMsg = data?.error?.message || `HTTP ${response.status}`;
-      console.error('❌ خطأ من Gemini:', errorMsg);
-      return res.status(response.status).json({ error: errorMsg });
-    }
-
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'لم أجد إجابة';
-
-    return res.status(200).json({ reply });
-  } catch (error) {
-    console.error('❌ خطأ في الدالة:', error.message);
-    return res.status(500).json({ error: error.message });
-  }
-}
+Use Control + Shift + m to toggle the tab key moving focus. Alternatively, use esc then tab to move to the next interactive element on the page.
