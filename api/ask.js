@@ -8,12 +8,15 @@ export default async function handler(req, res) {
 
   if (!apiKey) {
     console.error('❌ GEMINI_API_KEY غير موجود');
-    return res.status(500).json({ error: 'مفتاح API غير موجود' });
+    return res.status(500).json({ error: 'مفتاح API غير موجود في إعدادات Vercel' });
   }
 
   try {
+    // ✅ تم التحديث إلى النموذج الأحدث الموصى به من Google
+    const modelName = 'gemini-3.8-flash';
+    
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,7 +35,6 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
-    console.log('Response status:', response.status);
     
     if (!response.ok) {
       const errorMsg = data?.error?.message || `HTTP ${response.status}`;
@@ -41,6 +43,7 @@ export default async function handler(req, res) {
     }
 
     const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'لم أجد إجابة';
+
     return res.status(200).json({ reply });
   } catch (error) {
     console.error('❌ خطأ في الدالة:', error.message);
